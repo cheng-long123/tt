@@ -1,6 +1,8 @@
 <!--  -->
 <template>
-  <div id="app"> <h1>黑马头条发布系统</h1></div>
+  <div id="app">
+    <router-view></router-view>
+  </div>
 </template>
 
 <script>
@@ -14,6 +16,4 @@ export default {
 
 </script>
 
-<style lang='stylus' scoped>
-
-</style>
+<style lang='stylus' scoped></style>
