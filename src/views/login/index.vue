@@ -29,8 +29,8 @@ export default {
   data () {
     return {
       user: {
-        mobile: '',
-        code: '',
+        mobile: '13911111111',
+        code: '246810',
         agree: false
       },
       LoginLoading: false,
@@ -87,6 +87,11 @@ export default {
         })
         // 按钮 解禁
         this.LoginLoading = false
+        // 跳转
+        // this.$router.push('/')
+        this.$router.push({
+          name: 'home'
+        })
         // console.log(res)
       }).catch(() => {
         // 登陆失败
