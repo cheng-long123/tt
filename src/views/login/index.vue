@@ -61,7 +61,7 @@ export default {
         // 登陆失败
         // console.log(err)
         this.$message.error({
-          message: '登陆失败',
+          message: '登陆失败,手机号或密码错误',
           center: true
         })
         // 按钮 解禁
