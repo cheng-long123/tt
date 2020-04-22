@@ -5,6 +5,7 @@
     text-color="#fff"
     active-text-color="#409eff"
     router
+    :collapse="isCollapse"
   >
     <div class="logo">
       <img src="./logo_admin.png" alt />
@@ -42,10 +43,12 @@
 <script>
 export default {
   name: '',
-  props: {},
+  props: ['is-collapse'],
   components: {},
   data () {
-    return {}
+    return {
+
+    }
   },
   computed: {},
   watch: {},
@@ -64,6 +67,7 @@ export default {
   img {
     margin-top: 10px;
     line-height: 60px;
+    padding: 0 20px 0 13px;
   }
 }
 .iconfont {
