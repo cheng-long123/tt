@@ -1,6 +1,6 @@
 <template>
   <div class="login-container">
-    <el-form class="from-login" ref="login-form" :model="user" :rules="fromRules">
+    <el-form class="from-login" ref="login-form" :model="user" :rules="formRules">
       <div class="logo">
         <img src="./logo_index.png" alt />
       </div>
@@ -29,13 +29,15 @@ export default {
   data () {
     return {
       user: {
-        mobile: '13911111111',
+        mobile: '18888888888',
+        // 13911111111
         code: '246810',
         agree: false
+        // 246810
       },
       LoginLoading: false,
       // 表单验证
-      fromRules: {
+      formRules: {
         mobile: [
           { required: true, message: '请输入手机号', trigger: 'change' },
           { pattern: /^1(3|4|5|6|7|8|9)\d{9}$/, message: '手机号格式错误', trigger: 'blur' }
@@ -77,14 +79,19 @@ export default {
       // // 接收
       // const user = this.user
       //  发送请求
-      login(this.user).then(() => {
+      login(this.user).then((res) => {
         // 登录成功
+        // console.log(res)
+
         this.$message({
           message: '登陆成功',
           type: 'success',
           center: true,
           showClose: true
         })
+        // 存储token
+        // localStorage.setItem('token', res.data.data.token)
+        window.localStorage.setItem('user', JSON.stringify(res.data.data))
         // 按钮 解禁
         this.LoginLoading = false
         // 跳转

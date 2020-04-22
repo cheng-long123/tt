@@ -40,7 +40,7 @@ export default {
   methods: {
     getUserinfor () {
       getUserinfor().then((res) => {
-        console.log(res)
+        // console.log(res)
         this.user = res.data.data
       })
     }
@@ -74,7 +74,7 @@ export default {
       display: flex;
       align-items: center;
       font-weight: 700;
-      color: #000;
+      color: #049eff;
 
       .avatar {
         width: 40px;
