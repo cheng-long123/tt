@@ -1,5 +1,6 @@
 <template>
   <div class="article-container">
+    <!-- 上部分 -->
     <el-card class="box-card head-crad">
         <div slot="header" class="clearfix">
             <!-- 内容管理面包屑路径导航-->
@@ -41,6 +42,7 @@
             </el-form>
             <!-- /内容管理筛选 -->
     </el-card>
+    <!-- 下部分 -->
     <el-card class="box-card">
         <div slot="header" class="clearfix">
             <span>根据筛选条件共查询到 46147 条结果：</span>
@@ -134,7 +136,7 @@ export default {
   methods: {
     getArticle () {
       getArticle().then(res => {
-        console.log(res)
+        // console.log(res)
         this.articles = res.data.data.results
       })
     },
