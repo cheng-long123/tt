@@ -23,9 +23,15 @@
                 </el-radio-group>
             </el-form-item>
             <el-form-item label="频道">
-                <el-select v-model="form.region" placeholder="请选择频道">
-                <el-option label="区域一" value="shanghai"></el-option>
-                <el-option label="区域二" value="beijing"></el-option>
+                <el-select v-model="channelId" placeholder="请选择频道">
+                <el-option label="全部" :value="null"></el-option>
+                <el-option
+                v-for="(channel,index) in channels"
+                :key="index.id"
+                :label="channel.name"
+                :value="channel.id"
+                 >
+                 </el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="日期">
@@ -79,11 +85,11 @@
             <el-table-column
             label="状态">
              <template slot-scope="scope">
-            <el-tag v-if ="scope.row.status === 0">草稿</el-tag>
-            <el-tag v-else-if ="scope.row.status === 1" type="warning">待审核</el-tag>
+            <el-tag :type="articleStatus[scope.row.status].type">{{articleStatus[scope.row.status].text}}</el-tag>
+            <!-- <el-tag v-else-if ="scope.row.status === 1" type="warning">待审核</el-tag>
             <el-tag v-else-if  ="scope.row.status === 2" type="success">审核通过</el-tag>
             <el-tag v-else-if  ="scope.row.status === 3" type="danger">审核失败</el-tag>
-            <el-tag v-else-if  ="scope.row.status === 4" type="info">已删除</el-tag>
+            <el-tag v-else-if  ="scope.row.status === 4" type="info">已删除</el-tag> -->
              </template>
             </el-table-column>
             <el-table-column
@@ -125,7 +131,7 @@
   </div>
 </template>
 <script>
-import { getArticle } from '@/api/article'
+import { getArticle, getArticleChannels } from '@/api/article'
 export default {
   name: 'ArticleIndex',
   props: {},
@@ -142,11 +148,20 @@ export default {
         resource: '',
         desc: ''
       },
-      articles: [],
+      articleStatus: [
+        { text: '草稿', type: '' },
+        { text: '待审核', type: '' },
+        { text: '审核通过', type: '' },
+        { text: '审核失败', type: '' },
+        { text: '已删除', type: '' }
+      ],
+      articles: [], // 文章列表
       value1: '',
-      totalCount: 0,
-      pageSize: 10,
-      status: null
+      totalCount: 0, // 总数据数
+      pageSize: 10, // 每页 数据条数
+      status: null, // 状态
+      channels: [], // 频道
+      channelId: null // 查询频道
 
     }
   },
@@ -157,9 +172,10 @@ export default {
       getArticle({
         page,
         per_page: this.pageSize,
-        status: this.status
+        status: this.status,
+        channel_id: this.channelId
       }).then(res => {
-        console.log(res)
+        // console.log(res)
         const { results, total_count: TotalCount } = res.data.data
         this.articles = results
         this.totalCount = TotalCount
@@ -171,9 +187,16 @@ export default {
     currentChange (page) {
       // console.log(page)
       this.getArticle(page)
+    },
+    getChannels () {
+      getArticleChannels().then(res => {
+        console.log(res)
+        this.channels = res.data.data.channels
+      })
     }
   },
   created () {
+    this.getChannels()
     this.getArticle()
   },
   mounted () { },
