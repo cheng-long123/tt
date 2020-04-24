@@ -108,7 +108,7 @@
             </el-table-column>
             <el-table-column
             label="操作">
-            <template>
+            <template slot-scope="scope">
               <el-button
                 size="small"
                 circle
@@ -122,6 +122,7 @@
                 type="danger"
                 plain
                 icon="el-icon-delete"
+                @click = "onDeleteArticle(scope.row.id)"
                ></el-button>
              </template>
             </el-table-column>
@@ -134,6 +135,8 @@
                 layout="prev, pager, next"
                 :total="totalCount"
                 :page-size="pageSize"
+                 :disabled="loading"
+                :current-page.sync="page"
                 @current-change="currentChange">
             </el-pagination>
         <!-- /分页 -->
@@ -141,7 +144,7 @@
   </div>
 </template>
 <script>
-import { getArticle, getArticleChannels } from '@/api/article'
+import { getArticle, getArticleChannels, deleteArticle } from '@/api/article'
 export default {
   name: 'ArticleIndex',
   props: {},
@@ -173,8 +176,8 @@ export default {
       channels: [], // 频道
       channelId: null, // 查询频道
       rangeDate: null, // 时间
-      loading: true
-
+      loading: true, // 加载
+      page: 1 // 分页
     }
   },
   computed: {},
@@ -211,6 +214,26 @@ export default {
       getArticleChannels().then(res => {
         // console.log(res)
         this.channels = res.data.data.channels
+      })
+    },
+    onDeleteArticle (articleId) {
+      // console.log(articleId)
+      this.$confirm('你确定要删除吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 转换为字符串格式
+        deleteArticle(articleId.toString()).then(res => {
+          // console.log(res)
+          this.getArticle(this.page)
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消',
+          center: true
+        })
       })
     }
   },
