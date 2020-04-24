@@ -13,12 +13,13 @@
         <!-- 内容管理筛选 -->
             <el-form ref="form" :model="form" label-width="80px" size="small">
             <el-form-item label="状态">
-                <el-radio-group v-model="form.resource">
-                <el-radio label="草稿"></el-radio>
-                <el-radio label="待审核"></el-radio>
-                <el-radio label="审核通过"></el-radio>
-                <el-radio label="审核失败"></el-radio>
-                <el-radio label="删除"></el-radio>
+                <el-radio-group v-model="status">
+                  <el-radio :label="null">全部</el-radio>
+                <el-radio :label="0">草稿</el-radio>
+                <el-radio :label="1">待审核</el-radio>
+                <el-radio :label="2">审核通过</el-radio>
+                <el-radio :label="3">审核失败</el-radio>
+                <el-radio :label="4">删除</el-radio>
                 </el-radio-group>
             </el-form-item>
             <el-form-item label="频道">
@@ -37,7 +38,7 @@
                 ></el-date-picker>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" @click="onSubmit">查询</el-button>
+                <el-button type="primary" @click="getArticle()">查询</el-button>
             </el-form-item>
             </el-form>
             <!-- /内容管理筛选 -->
@@ -45,7 +46,7 @@
     <!-- 下部分 -->
     <el-card class="box-card">
         <div slot="header" class="clearfix">
-            <span>根据筛选条件共查询到 46147 条结果：</span>
+            <span>根据筛选条件共查询到 {{totalCount}} 条结果：</span>
         </div>
         <!-- 表格区域 -->
             <el-table
@@ -57,6 +58,18 @@
             prop="date"
             label="封面"
             >
+            <template slot-scope="scope">
+              <img
+              v-if="scope.row.cover.images[0]"
+              class="article-cover"
+              :src="scope.row.cover.images[0]"
+              alt="">
+              <img
+              v-else
+              class="article-cover"
+              src="./no-cover.gif"
+              alt="">
+            </template>
             </el-table-column>
             <el-table-column
             prop="title"
@@ -103,7 +116,9 @@
             <el-pagination
                 background
                 layout="prev, pager, next"
-                :total="1000">
+                :total="totalCount"
+                :page-size="pageSize"
+                @current-change="currentChange">
             </el-pagination>
         <!-- /分页 -->
     </el-card>
@@ -128,20 +143,34 @@ export default {
         desc: ''
       },
       articles: [],
-      value1: ''
+      value1: '',
+      totalCount: 0,
+      pageSize: 10,
+      status: null
+
     }
   },
   computed: {},
   watch: {},
   methods: {
-    getArticle () {
-      getArticle().then(res => {
-        // console.log(res)
-        this.articles = res.data.data.results
+    getArticle (page = 1) {
+      getArticle({
+        page,
+        per_page: this.pageSize,
+        status: this.status
+      }).then(res => {
+        console.log(res)
+        const { results, total_count: TotalCount } = res.data.data
+        this.articles = results
+        this.totalCount = TotalCount
       })
     },
     onSubmit () {
       console.log('submit!')
+    },
+    currentChange (page) {
+      // console.log(page)
+      this.getArticle(page)
     }
   },
   created () {
@@ -165,5 +194,9 @@ export default {
   .el-pagination{
       text-align: center;
       margin-top: 30px;
+  }
+  .article-cover{
+    width: 100px;
+    background-size: cover;
   }
 </style>
