@@ -62,6 +62,7 @@
             :data="articles"
             style="width: 100%"
             size="small"
+            v-loading="loading"
             >
             <el-table-column
             prop="date"
@@ -171,7 +172,8 @@ export default {
       status: null, // 状态
       channels: [], // 频道
       channelId: null, // 查询频道
-      rangeDate: null // 时间
+      rangeDate: null, // 时间
+      loading: true
 
     }
   },
@@ -180,6 +182,7 @@ export default {
   methods: {
     // 获取列表信息
     getArticle (page = 1) {
+      this.loading = true
       getArticle({
         page,
         per_page: this.pageSize,
@@ -189,6 +192,7 @@ export default {
         end_pubdate: this.rangeDate ? this.rangeDate[1] : null // 截止时间
       }).then(res => {
         // console.log(res)
+        this.loading = false
         const { results, total_count: TotalCount } = res.data.data
         this.articles = results
         this.totalCount = TotalCount
