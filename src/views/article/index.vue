@@ -27,7 +27,7 @@
                 <el-option label="全部" :value="null"></el-option>
                 <el-option
                 v-for="(channel,index) in channels"
-                :key="index.id"
+                :key="index"
                 :label="channel.name"
                 :value="channel.id"
                  >
@@ -35,13 +35,16 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="日期">
-                <el-date-picker
-                v-model="value1"
-                type="daterange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                ></el-date-picker>
+             <el-date-picker
+            v-model="rangeDate"
+            type="datetimerange"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            :default-time="['12:00:00']"
+            format="yyyy-MM-dd"
+            value-format="yyyy-MM-dd"
+            >
+          </el-date-picker>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="getArticle()">查询</el-button>
@@ -65,7 +68,13 @@
             label="封面"
             >
             <template slot-scope="scope">
-              <img
+              <el-image
+              style="width: 100px; height: 100px"
+              :src="scope.row.cover.images[0]"
+              lazy
+ >
+              </el-image>
+              <!-- <img
               v-if="scope.row.cover.images[0]"
               class="article-cover"
               :src="scope.row.cover.images[0]"
@@ -74,7 +83,7 @@
               v-else
               class="article-cover"
               src="./no-cover.gif"
-              alt="">
+              alt=""> -->
             </template>
             </el-table-column>
             <el-table-column
@@ -146,34 +155,38 @@ export default {
         delivery: false,
         type: [],
         resource: '',
-        desc: ''
+        desc: '',
+        value1: ''
       },
       articleStatus: [
         { text: '草稿', type: '' },
-        { text: '待审核', type: '' },
-        { text: '审核通过', type: '' },
-        { text: '审核失败', type: '' },
-        { text: '已删除', type: '' }
+        { text: '待审核', type: 'warning' },
+        { text: '审核通过', type: 'success' },
+        { text: '审核失败', type: 'danger' },
+        { text: '已删除', type: 'info' }
       ],
       articles: [], // 文章列表
-      value1: '',
       totalCount: 0, // 总数据数
       pageSize: 10, // 每页 数据条数
       status: null, // 状态
       channels: [], // 频道
-      channelId: null // 查询频道
+      channelId: null, // 查询频道
+      rangeDate: null // 时间
 
     }
   },
   computed: {},
   watch: {},
   methods: {
+    // 获取列表信息
     getArticle (page = 1) {
       getArticle({
         page,
         per_page: this.pageSize,
         status: this.status,
-        channel_id: this.channelId
+        channel_id: this.channelId,
+        begin_pubdate: this.rangeDate ? this.rangeDate[0] : null, // 起始时间
+        end_pubdate: this.rangeDate ? this.rangeDate[1] : null // 截止时间
       }).then(res => {
         // console.log(res)
         const { results, total_count: TotalCount } = res.data.data
@@ -184,18 +197,21 @@ export default {
     onSubmit () {
       console.log('submit!')
     },
+    // 条件查询
     currentChange (page) {
       // console.log(page)
       this.getArticle(page)
     },
+    // 获取频道
     getChannels () {
       getArticleChannels().then(res => {
-        console.log(res)
+        // console.log(res)
         this.channels = res.data.data.channels
       })
     }
   },
   created () {
+    // 调用
     this.getChannels()
     this.getArticle()
   },
@@ -219,7 +235,7 @@ export default {
       margin-top: 30px;
   }
   .article-cover{
-    width: 100px;
+    width: 120px;
     background-size: cover;
   }
 </style>
