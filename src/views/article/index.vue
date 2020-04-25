@@ -19,7 +19,7 @@
                 <el-radio :label="1">待审核</el-radio>
                 <el-radio :label="2">审核通过</el-radio>
                 <el-radio :label="3">审核失败</el-radio>
-                <el-radio :label="4">删除</el-radio>
+                <el-radio :label="4">已删除</el-radio>
                 </el-radio-group>
             </el-form-item>
             <el-form-item label="频道">
@@ -47,7 +47,7 @@
           </el-date-picker>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" @click="getArticle()">查询</el-button>
+                <el-button type="primary" :disabled="loading" @click="getArticle()">查询</el-button>
             </el-form-item>
             </el-form>
             <!-- /内容管理筛选 -->
@@ -72,8 +72,7 @@
               <el-image
               style="width: 100px; height: 100px"
               :src="scope.row.cover.images[0]"
-              lazy
- >
+              lazy>
               </el-image>
               <!-- <img
               v-if="scope.row.cover.images[0]"
@@ -125,8 +124,8 @@
                 @click = "onDeleteArticle(scope.row.id)"
                ></el-button>
              </template>
-            </el-table-column>
-            </el-table>
+              </el-table-column>
+              </el-table>
         <!-- /表格区域 -->
 
         <!-- 分页 -->
@@ -135,7 +134,7 @@
                 layout="prev, pager, next"
                 :total="totalCount"
                 :page-size="pageSize"
-                 :disabled="loading"
+                :disabled="loading"
                 :current-page.sync="page"
                 @current-change="currentChange">
             </el-pagination>
