@@ -4,7 +4,7 @@
         <div slot="header" class="clearfix">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-                <el-breadcrumb-item>发布文章</el-breadcrumb-item>
+                <el-breadcrumb-item>{{$route.query.id ? '修改文章' : '发布文章'}}</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
          <el-form ref="form" :model="article" label-width="80px">
@@ -33,15 +33,22 @@
                 </el-select>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" @click="onPublish(false)">发表</el-button>
-                <el-button  @click="onPublish(true)">存入草稿</el-button>
+                 <el-button v-if="$route.query.id" type="success" @click="onPublish(false)">修改</el-button>
+                <el-button v-else type="primary" @click="onPublish(false)">发表</el-button>
+                <el-button  @click="onPublish(true)">{{$route.query.id ? '修改草稿' : 存为草稿}}</el-button>
             </el-form-item>
       </el-form>
     </el-card>
   </div>
 </template>
 <script>
-import { getArticleChannels, addArticle } from '@/api/article'
+import {
+  getArticleChannels,
+  addArticle,
+  getAppointArticle,
+  updateArticle
+} from '@/api/article'
+
 export default {
   name: 'PublishIndex',
   props: {},
@@ -75,26 +82,61 @@ export default {
     },
     // 发表文章
     onPublish (draft = false) {
-      addArticle(this.article, draft).then(res => {
-        console.log(res)
-        if (draft === false) {
-          this.$message({
-            message: '发布成功',
-            type: 'success',
-            center: true
-          })
-        } else {
-          this.$message({
-            message: '草稿发布成功',
-            type: 'success',
-            center: true
-          })
-        }
+    // 获取id
+      const articleId = this.$route.query.id
+      // 判断是否有id 如果有执行修改 没有执行添加
+      if (articleId) {
+        updateArticle(articleId, this.article, draft).then(res => {
+          console.log(res)
+          if (draft === false) {
+            this.$message({
+              message: '修改成功',
+              type: 'success',
+              center: true
+            })
+          } else {
+            this.$message({
+              message: '修改草稿成功',
+              type: 'success',
+              center: true
+            })
+          }
+          this.$router.push('/article')
+        })
+      } else {
+        addArticle(this.article, draft).then(res => {
+          console.log(res)
+          if (draft === false) {
+            this.$message({
+              message: '发布成功',
+              type: 'success',
+              center: true
+            })
+          } else {
+            this.$message({
+              message: '草稿发布成功',
+              type: 'success',
+              center: true
+            })
+          }
+          this.$router.push('/article')
+        })
+      }
+    },
+    // 获取指定文章
+    getAppointArticle () {
+      getAppointArticle(this.$route.query.id).then(res => {
+        // console.log(res)
+        this.article = res.data.data
       })
     }
   },
   created () {
     this.getChannels()
+    // 判断地址是否传过来id 如果传过来就执行
+    if (this.$route.query.id) {
+      this.getAppointArticle()
+    }
   },
   mounted () {},
   beforeDestroy () {}
