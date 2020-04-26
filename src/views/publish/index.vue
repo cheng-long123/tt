@@ -166,18 +166,17 @@ export default {
         content: [
           {
             validator: (rule, value, callback) => {
-              if (value) {
-                callback()
-              } else {
+              if (value === '<p></p>') {
                 callback(new Error('请输入内容'))
+              } else {
+                callback()
               }
-            },
-            trigger: 'change'
+            }
           },
           { required: true, message: '请输入内容', trigger: 'blur' }
         ],
         channel_id: [
-          { required: true, message: '请选择频道', trigger: 'blur' }
+          { required: true, message: '请选择频道', trigger: 'change' }
         ]
 
       }

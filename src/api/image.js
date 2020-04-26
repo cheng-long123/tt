@@ -9,3 +9,11 @@ export const uploadImage = data => {
     data
   })
 }
+// 获取图片素材
+export const getImage = params => {
+  return request({
+    method: 'GET',
+    url: '/mp/v1_0/user/images',
+    params
+  })
+}
