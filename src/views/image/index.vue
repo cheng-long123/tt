@@ -45,7 +45,7 @@
         element-loading-text="拼命加载中"
         element-loading-spinner="el-icon-loading"
         >
-        <div class="fodder-box">
+        <div v-if ="collect === false" class="fodder-box">
             <span :class="{
                 'el-icon-star-off': !image.is_collected,
                 'el-icon-star-on': image.is_collected
@@ -86,6 +86,7 @@ export default {
       collect: false,
       images: [],
       dialogVisible: false,
+      is_collected: [],
       uploadHeaders: {
         Authorization: `Bearer ${user.token}`
       },
@@ -99,14 +100,14 @@ export default {
   watch: {},
   methods: {
     // 获取图片素材
-    getImage (collect = false, page = 1) {
+    getImage () {
       this.loading = true
       getImage({
-        collect,
-        page,
+        collect: this.collect,
+        page: this.page,
         per_page: this.pageSize
       }).then(res => {
-        // console.log(res)
+        console.log(res)
         this.loading = false
         this.images = res.data.data.results
         this.totalCount = res.data.data.total_count
@@ -114,12 +115,14 @@ export default {
     },
     // 分页
     currentChange (page) {
-      this.getImage(false, page)
+      this.page = page
+      this.getImage()
     //   console.log(page)
     },
     collectChange (value) {
-      this.getImage(value)
-    //   console.log(value)
+      this.collect = value
+      this.getImage()
+      console.log(value)
     },
     uploadSuccess () {
       this.$message({

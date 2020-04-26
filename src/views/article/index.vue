@@ -151,6 +151,17 @@ export default {
   components: {},
   data () {
     return {
+      form: {
+        name: '',
+        region: '',
+        date1: '',
+        date2: '',
+        delivery: false,
+        type: [],
+        resource: '',
+        desc: '',
+        value1: ''
+      },
       articleStatus: [
         { text: '草稿', type: '' },
         { text: '待审核', type: 'warning' },
@@ -193,7 +204,7 @@ export default {
     onSubmit () {
       console.log('submit!')
     },
-    // 条件查询
+    // 分页
     currentChange (page) {
       // console.log(page)
       this.getArticle(page)
