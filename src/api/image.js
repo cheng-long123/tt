@@ -17,7 +17,7 @@ export const getImage = params => {
     params
   })
 }
-// 获取图片素材
+// 收藏图片素材
 export const collectImage = (collect, targetId) => {
   return request({
     method: 'PUT',

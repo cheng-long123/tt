@@ -41,6 +41,9 @@
         :xs=12
         :sm=6
         :md=6
+        v-loading="loading"
+        element-loading-text="拼命加载中"
+        element-loading-spinner="el-icon-loading"
         >
         <div class="fodder-box">
             <span :class="{
@@ -61,7 +64,11 @@
         class="fodder-paging"
         background
         layout="prev, pager, next"
-        :total="1000">
+        :total="totalCount"
+        :disabled="loading"
+        :page-size="pageSize"
+        :current-page.sync="page"
+         @current-change="currentChange">
      </el-pagination>
 </el-card>
   </div>
@@ -81,24 +88,38 @@ export default {
       dialogVisible: false,
       uploadHeaders: {
         Authorization: `Bearer ${user.token}`
-      }
+      },
+      pageSize: 20,
+      page: 1,
+      totalCount: 0,
+      loading: true
     }
   },
   computed: {},
   watch: {},
   methods: {
     // 获取图片素材
-    getImage (collect = false) {
+    getImage (collect = false, page = 1) {
+      this.loading = true
       getImage({
-        collect
+        collect,
+        page,
+        per_page: this.pageSize
       }).then(res => {
         // console.log(res)
+        this.loading = false
         this.images = res.data.data.results
+        this.totalCount = res.data.data.total_count
       })
+    },
+    // 分页
+    currentChange (page) {
+      this.getImage(false, page)
+    //   console.log(page)
     },
     collectChange (value) {
       this.getImage(value)
-      console.log(value)
+    //   console.log(value)
     },
     uploadSuccess () {
       this.$message({
@@ -116,7 +137,7 @@ export default {
     collectImage (imageId) {
       console.log(this.images)
       collectImage(!imageId.is_collected, imageId.id).then(res => {
-        console.log(res)
+        // console.log(res)
         if (!imageId.is_collected) {
           this.$message({
             showClose: true,
@@ -212,10 +233,10 @@ export default {
                  }
         }
     }
-            .fodder-border:hover .fodder-box {
-            height: 30px;
-            display: block;
-            }
+.fodder-border:hover .fodder-box {
+        height: 30px;
+        display: block;
+    }
 }
          .fodder-paging{
                 text-align: center;
