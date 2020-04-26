@@ -12,8 +12,27 @@
       <el-radio-button :label="false">全部</el-radio-button>
       <el-radio-button :label="true">收藏</el-radio-button>
        </el-radio-group>
-     <el-button type="success"  size="mini">添加素材</el-button>
+     <el-button type="success"  size="mini" @click="dialogVisible=true">添加素材</el-button>
     </div>
+    <el-dialog
+        title="上传素材"
+        :visible.sync="dialogVisible"
+        width="30%"
+        :modal-append-to-body="false"
+        >
+        <el-upload
+        class="upload-demo"
+        drag
+        name="image"
+        action="http://ttapi.research.itcast.cn/mp/v1_0/user/images"
+        :headers="uploadHeaders"
+         :on-success="uploadSuccess"
+        multiple>
+        <i class="el-icon-upload"></i>
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
+       </el-upload>
+    </el-dialog>
     <el-row :gutter="20" class="fodder-bg">
         <el-col
         class="fodder-border"
@@ -35,14 +54,20 @@
 </template>
 <script>
 import { getImage } from '@/api/image'
+
 export default {
   name: 'ImageIndex',
   props: {},
   components: {},
   data () {
+    const user = JSON.parse(localStorage.getItem('user'))
     return {
       collect: false,
-      images: []
+      images: [],
+      dialogVisible: false,
+      uploadHeaders: {
+        Authorization: `Bearer ${user.token}`
+      }
     }
   },
   computed: {},
@@ -59,6 +84,10 @@ export default {
     collectChange (value) {
       this.getImage(value)
       console.log(value)
+    },
+    uploadSuccess () {
+      this.dialogVisible = false
+      this.getImage()
     }
   },
   created () {
