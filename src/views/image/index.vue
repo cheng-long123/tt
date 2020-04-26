@@ -48,7 +48,7 @@
                 'el-icon-star-on': image.is_collected
                 }"
                 @click=collectImage(image)></span>
-            <span class=" el-icon-delete"></span>
+            <span class=" el-icon-delete" @click="delImage(image.id)"></span>
         </div>
        <el-image
         style="width:100%; height:180px"
@@ -67,7 +67,7 @@
   </div>
 </template>
 <script>
-import { getImage, collectImage } from '@/api/image'
+import { getImage, collectImage, delImage } from '@/api/image'
 
 export default {
   name: 'ImageIndex',
@@ -101,11 +101,18 @@ export default {
       console.log(value)
     },
     uploadSuccess () {
-    // 取消隐藏
+      this.$message({
+        showClose: true,
+        message: '上传成功',
+        type: 'success',
+        center: true
+      })
+      // 取消隐藏
       this.dialogVisible = false
       // 重新渲染
       this.getImage()
     },
+    // 收藏图片
     collectImage (imageId) {
       console.log(this.images)
       collectImage(!imageId.is_collected, imageId.id).then(res => {
@@ -114,16 +121,42 @@ export default {
           this.$message({
             showClose: true,
             message: '收藏成功',
-            type: 'success'
+            type: 'success',
+            center: true
           })
         } else {
           this.$message({
             showClose: true,
             message: '取消收藏',
-            type: 'success'
+            type: 'success',
+            center: true
           })
         }
         this.getImage()
+      })
+    },
+    // 删除图片
+    delImage (imageId) {
+      this.$confirm('你确定要删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        delImage(imageId).then(res => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!',
+            center: true
+          })
+          // 重新渲染
+          this.getImage()
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除',
+          center: true
+        })
       })
     }
   },
@@ -161,7 +194,7 @@ export default {
             transform: translate(-50%);
              line-height: 30px;
              font-weight: 700;
-
+             color: #fff;
               .el-icon-star-off,
               .el-icon-star-on{
                     float: left;
@@ -169,6 +202,9 @@ export default {
                 }
                  .el-icon-star-on{
                      color: red;
+                    //  background-color: #000;
+                    //  border:1px solid #000
+                    //  font-size: 25px;
                  }
                  .el-icon-delete{
                      float:right;
