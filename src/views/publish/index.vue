@@ -7,7 +7,7 @@
                 <el-breadcrumb-item>{{$route.query.id ? '修改文章' : '发布文章'}}</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
-         <el-form ref="form" :model="article" label-width="60px" :rules="formRules">
+         <el-form ref="publish-article" :model="article" label-width="60px" :rules="formRules">
             <el-form-item label="标题" style="width:500px" prop="title">
                 <el-input v-model="article.title" placeholder="请输入标题" ></el-input>
             </el-form-item>
@@ -157,7 +157,30 @@ export default {
         new SelectAll(),
         new FontType(),
         new Fullscreen()
-      ]
+      ],
+      formRules: {
+        title: [
+          { required: true, message: '请输入标题', trigger: 'blur' },
+          { min: 5, max: 30, message: '长度在 5 到30 个字符', trigger: 'blur' }
+        ],
+        content: [
+          {
+            validator: (rule, value, callback) => {
+              if (value) {
+                callback()
+              } else {
+                callback(new Error('请输入内容'))
+              }
+            },
+            trigger: 'change'
+          },
+          { required: true, message: '请输入内容', trigger: 'blur' }
+        ],
+        channel_id: [
+          { required: true, message: '请选择频道', trigger: 'blur' }
+        ]
+
+      }
     }
   },
   computed: {},
@@ -175,46 +198,50 @@ export default {
     },
     // 发表文章
     onPublish (draft = false) {
-    // 获取id
+      // 获取id
       const articleId = this.$route.query.id
-      // 判断是否有id 如果有执行修改 没有执行添加
-      if (articleId) {
-        updateArticle(articleId, this.article, draft).then(res => {
-          console.log(res)
-          if (draft === false) {
-            this.$message({
-              message: '修改成功',
-              type: 'success',
-              center: true
+      this.$refs['publish-article'].validate(value => {
+        if (value) {
+          // 判断是否有id 如果有执行修改 没有执行添加
+          if (articleId) {
+            updateArticle(articleId, this.article, draft).then(res => {
+              console.log(res)
+              if (draft === false) {
+                this.$message({
+                  message: '修改成功',
+                  type: 'success',
+                  center: true
+                })
+              } else {
+                this.$message({
+                  message: '修改草稿成功',
+                  type: 'success',
+                  center: true
+                })
+              }
+              this.$router.push('/article')
             })
           } else {
-            this.$message({
-              message: '修改草稿成功',
-              type: 'success',
-              center: true
+            addArticle(this.article, draft).then(res => {
+              console.log(res)
+              if (draft === false) {
+                this.$message({
+                  message: '发布成功',
+                  type: 'success',
+                  center: true
+                })
+              } else {
+                this.$message({
+                  message: '草稿发布成功',
+                  type: 'success',
+                  center: true
+                })
+              }
+              this.$router.push('/article')
             })
           }
-          this.$router.push('/article')
-        })
-      } else {
-        addArticle(this.article, draft).then(res => {
-          console.log(res)
-          if (draft === false) {
-            this.$message({
-              message: '发布成功',
-              type: 'success',
-              center: true
-            })
-          } else {
-            this.$message({
-              message: '草稿发布成功',
-              type: 'success',
-              center: true
-            })
-          }
-          this.$router.push('/article')
-        })
-      }
+        }
+      })
     },
     // 获取指定文章
     getAppointArticle () {
