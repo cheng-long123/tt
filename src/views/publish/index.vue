@@ -7,12 +7,13 @@
                 <el-breadcrumb-item>{{$route.query.id ? '修改文章' : '发布文章'}}</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
-         <el-form ref="form" :model="article" label-width="80px">
-            <el-form-item label="标题" style="width:500px">
-                <el-input v-model="article.title"></el-input>
+         <el-form ref="form" :model="article" label-width="60px" :rules="formRules">
+            <el-form-item label="标题" style="width:500px" prop="title">
+                <el-input v-model="article.title" placeholder="请输入标题" ></el-input>
             </el-form-item>
-             <el-form-item label="内容" style="width:500px">
-                <el-input type="textarea" v-model="article.content"></el-input>
+             <el-form-item label="内容"  prop="content">
+                <!-- <el-input type="textarea" v-model="article.content"></el-input> -->
+                <el-tiptap v-model="article.content" :extensions="extensions" height=500 placeholder="请输入内容"></el-tiptap>
             </el-form-item>
              <el-form-item label="封面">
                 <el-radio-group v-model="article.cover.type">
@@ -22,8 +23,8 @@
                 <el-radio :label="-1">自动</el-radio>
                 </el-radio-group>
             </el-form-item>
-            <el-form-item label="频道">
-                <el-select v-model="article.channel_id" placeholder="请选择频道">
+            <el-form-item label="频道" prop="channel_id">
+                <el-select v-model="article.channel_id"  placeholder="请选择频道">
                 <el-option
                 :label="channel.name"
                 :value="channel.id"
@@ -33,9 +34,9 @@
                 </el-select>
             </el-form-item>
             <el-form-item>
-                 <el-button v-if="$route.query.id" type="success" @click="onPublish(false)">修改</el-button>
-                <el-button v-else type="primary" @click="onPublish(false)">发表</el-button>
-                <el-button  @click="onPublish(true)">{{$route.query.id ? '修改草稿' : 存为草稿}}</el-button>
+                 <el-button  v-if="$route.query.id" type="success" @click="onPublish(false)">修改</el-button>
+                <el-button v-else type="primary" @click="onPublish(false)">发布</el-button>
+                <el-button  @click="onPublish(true)">{{$route.query.id ? '修改草稿' : '存为草稿'}}</el-button>
             </el-form-item>
       </el-form>
     </el-card>
@@ -48,11 +49,56 @@ import {
   getAppointArticle,
   updateArticle
 } from '@/api/article'
+import { uploadImage } from '@/api/image'
+// import element-tiptap 样式
+import 'element-tiptap/lib/index.css'
 
+import {
+  ElementTiptap,
+  Doc,
+  Text,
+  Paragraph,
+  Heading,
+  Bold,
+  Underline,
+  Italic,
+  Strike,
+  Link,
+  Iframe,
+  CodeBlock,
+  Blockquote,
+  Image,
+  ListItem,
+  BulletList,
+  OrderedList,
+  TodoItem,
+  TodoList,
+  TextAlign,
+  Indent,
+  LineHeight,
+  HorizontalRule,
+  HardBreak,
+  TrailingNode,
+  History,
+  Table,
+  TableHeader,
+  TableCell,
+  TableRow,
+  FormatClear,
+  TextColor,
+  TextHighlight,
+  Preview,
+  Print,
+  Fullscreen,
+  SelectAll,
+  FontType
+} from 'element-tiptap'
 export default {
   name: 'PublishIndex',
   props: {},
-  components: {},
+  components: {
+    'el-tiptap': ElementTiptap
+  },
   data () {
     return {
       article: {
@@ -64,7 +110,54 @@ export default {
         },
         channel_id: null
       },
-      channels: []
+      channels: [],
+      extensions: [
+        new Doc(),
+        new Text(),
+        new Paragraph(),
+        new Heading({ level: 5 }),
+        new Bold({ bubble: true }), // 在气泡菜单中渲染菜单按钮
+        new Underline(),
+        new Italic(),
+        new Strike(),
+        new ListItem(),
+        new BulletList(),
+        new OrderedList(),
+        new Link(),
+        new Iframe(),
+        new Image({
+          uploadRequest (file) {
+            const fd = new FormData()
+            fd.append('image', file)
+            return uploadImage(fd).then(res => {
+              return res.data.data.url
+            })
+          } // 图片的上传方法，返回一个 Promise<url>
+        }),
+        new CodeBlock(),
+        new Blockquote(),
+        new TodoItem(),
+        new TodoList(),
+        new TextAlign(),
+        new Indent(),
+        new LineHeight(),
+        new HorizontalRule(),
+        new HardBreak(),
+        new TrailingNode(),
+        new History(),
+        new Table(),
+        new TableHeader(),
+        new TableCell(),
+        new TableRow(),
+        new FormatClear(),
+        new TextColor(),
+        new TextHighlight(),
+        new Preview(),
+        new Print(),
+        new SelectAll(),
+        new FontType(),
+        new Fullscreen()
+      ]
     }
   },
   computed: {},

@@ -216,6 +216,7 @@ export default {
         this.channels = res.data.data.channels
       })
     },
+    // 删除功能
     onDeleteArticle (articleId) {
       // console.log(articleId)
       this.$confirm('你确定要删除吗？', '提示', {
@@ -226,6 +227,11 @@ export default {
         // 转换为字符串格式
         deleteArticle(articleId.toString()).then(res => {
           // console.log(res)
+          this.$message({
+            message: '删除成功',
+            type: 'success',
+            center: true
+          })
           this.getArticle(this.page)
         })
       }).catch(() => {
