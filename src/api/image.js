@@ -17,3 +17,13 @@ export const getImage = params => {
     params
   })
 }
+// 获取图片素材
+export const collectImage = (collect, targetId) => {
+  return request({
+    method: 'PUT',
+    url: `/mp/v1_0/user/images/${targetId}`,
+    data: {
+      collect
+    }
+  })
+}

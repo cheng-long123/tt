@@ -40,20 +40,34 @@
         :key="index"
         :xs=12
         :sm=6
-        :md=4
+        :md=6
         >
+        <div class="fodder-box">
+            <span :class="{
+                'el-icon-star-off': !image.is_collected,
+                'el-icon-star-on': image.is_collected
+                }"
+                @click=collectImage(image)></span>
+            <span class=" el-icon-delete"></span>
+        </div>
        <el-image
-        style="width:120px; height:120px"
+        style="width:100%; height:180px"
         :src="image.url"
         fit="cover">
       </el-image>
         </el-col>
      </el-row>
+     <el-pagination
+        class="fodder-paging"
+        background
+        layout="prev, pager, next"
+        :total="1000">
+     </el-pagination>
 </el-card>
   </div>
 </template>
 <script>
-import { getImage } from '@/api/image'
+import { getImage, collectImage } from '@/api/image'
 
 export default {
   name: 'ImageIndex',
@@ -73,6 +87,7 @@ export default {
   computed: {},
   watch: {},
   methods: {
+    // 获取图片素材
     getImage (collect = false) {
       getImage({
         collect
@@ -86,8 +101,30 @@ export default {
       console.log(value)
     },
     uploadSuccess () {
+    // 取消隐藏
       this.dialogVisible = false
+      // 重新渲染
       this.getImage()
+    },
+    collectImage (imageId) {
+      console.log(this.images)
+      collectImage(!imageId.is_collected, imageId.id).then(res => {
+        console.log(res)
+        if (!imageId.is_collected) {
+          this.$message({
+            showClose: true,
+            message: '收藏成功',
+            type: 'success'
+          })
+        } else {
+          this.$message({
+            showClose: true,
+            message: '取消收藏',
+            type: 'success'
+          })
+        }
+        this.getImage()
+      })
     }
   },
   created () {
@@ -105,9 +142,47 @@ export default {
 }
 .fodder-bg{
     .fodder-border{
+        position: relative;
         // border: 1px solid #ccc;
-        margin-top: 10px;
-        padding: 0 5px;
+        margin-top: 20px;
+        // padding: 0 5px;
+        .fodder-box{
+            display: none;
+            position: absolute;
+            bottom: 0;
+            left:50%;
+            width: 250px;
+            height: 0;
+              font-size: 20px;
+            // margin: 0 5px;
+            // padding:0 20px;
+            background-color: rgba(0, 0, 0, 0.3);
+            z-index: 100;
+            transform: translate(-50%);
+             line-height: 30px;
+             font-weight: 700;
+
+              .el-icon-star-off,
+              .el-icon-star-on{
+                    float: left;
+                    margin-left: 30%;
+                }
+                 .el-icon-star-on{
+                     color: red;
+                 }
+                 .el-icon-delete{
+                     float:right;
+                     margin-right: 30%;
+                 }
+        }
     }
+            .fodder-border:hover .fodder-box {
+            height: 30px;
+            display: block;
+            }
 }
+         .fodder-paging{
+                text-align: center;
+                margin-top: 40px;
+            }
 </style>
