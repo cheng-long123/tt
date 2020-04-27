@@ -8,6 +8,7 @@
    </el-breadcrumb>
   </div>
   <el-table
+       v-loading="loading"
       :data="comments"
       style="width: 100%">
       <el-table-column
@@ -48,9 +49,15 @@
       </el-table-column>
     </el-table>
     <el-pagination
+        class="paging"
         background
+        :disabled="loading"
         layout="prev, pager, next"
-        :total="1000">
+        :page-size="per_page"
+        :total="totalCount"
+        :size-change.sync="page"
+         @current-change="currentChange"
+        >
    </el-pagination>
 </el-card>
 
@@ -64,23 +71,38 @@ export default {
   components: {},
   data () {
     return {
-      comments: []
+      comments: [],
+      per_page: 20, // 每页数据
+      totalCount: 0, // 总数据
+      page: 1, // 页数
+      loading: true
     }
   },
   computed: {},
   watch: {},
   methods: {
-    getComment () {
+    // 获取评论
+    getComment (page) {
+      this.loading = true
       getComment({
-        response_type: 'comment'
+        page,
+        response_type: 'comment',
+        per_page: this.per_page
       }).then(res => {
         console.log(res)
+        this.loading = false
         this.comments = res.data.data.results
+        this.totalCount = res.data.data.total_count
       })
     },
+    // 分页
+    currentChange (page) {
+      this.getComment(page)
+    },
+    // 打开关闭评论
     operationComment (id, status) {
       const articleid = id.join('')
-      console.log(id)
+      //   console.log(id)
       this.$confirm(status ? '亲，您是否要打开当前文章评论功能?' : '亲，您是否要关闭当前文章评论功能，如果关闭读者将无法对这篇文章进行评论',
         '提示', {
           confirmButtonText: '确定',
@@ -114,4 +136,8 @@ export default {
 }
 </script>
 <style lang='less' scoped>
+.paging{
+    text-align: center;
+    margin-top: 30px;
+}
 </style>

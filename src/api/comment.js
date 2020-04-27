@@ -9,6 +9,7 @@ export const getComment = params => {
     params
   })
 }
+// 评论打开与关闭
 export const updateComment = (params, data) => {
   return request({
     method: 'PUT',
