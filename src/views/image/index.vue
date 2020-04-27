@@ -41,6 +41,7 @@
         :xs=12
         :sm=6
         :md=6
+        lazy
         v-loading="loading"
         element-loading-text="拼命加载中"
         element-loading-spinner="el-icon-loading"
@@ -90,7 +91,7 @@ export default {
       uploadHeaders: {
         Authorization: `Bearer ${user.token}`
       },
-      pageSize: 20,
+      pageSize: 12,
       page: 1,
       totalCount: 0,
       loading: true
@@ -107,7 +108,7 @@ export default {
         page: this.page,
         per_page: this.pageSize
       }).then(res => {
-        console.log(res)
+        // console.log(res)
         this.loading = false
         this.images = res.data.data.results
         this.totalCount = res.data.data.total_count
@@ -122,7 +123,7 @@ export default {
     collectChange (value) {
       this.collect = value
       this.getImage()
-      console.log(value)
+    //   console.log(value)
     },
     uploadSuccess () {
       this.$message({
