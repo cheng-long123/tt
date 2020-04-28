@@ -8,6 +8,7 @@
    </el-breadcrumb>
   </div>
   <el-table
+      v-loading="loading"
       :data="comments"
       style="width: 100%">
       <el-table-column
@@ -31,7 +32,15 @@
       <el-table-column
         label="操作">
        <template slot-scope="scope">
-         <el-button
+         <el-switch
+          v-model="scope.row.comment_status"
+          active-color="#13ce66"
+          inactive-color="#ff4949"
+          :disabled="scope.row.loading"
+          @change="operationComment(scope.row)"
+          >
+        </el-switch>
+         <!-- <el-button
          v-if="scope.row.comment_status"
           size="mini"
           type="danger"
@@ -43,7 +52,7 @@
           type="success"
           plain
           @click="operationComment(scope.row.id.c,true)">
-          打开评论</el-button>
+          打开评论</el-button> -->
        </template>
       </el-table-column>
     </el-table>
@@ -51,11 +60,14 @@
         class="paging"
         background
         :disabled="loading"
-        layout="prev, pager, next"
-        :page-size="per_page"
+        :page-size.sync="per_page"
+        layout="total, sizes, prev, pager, next, jumper"
         :total="totalCount"
-        :size-change.sync="page"
+        :current-page.sync="page"
+         :page-sizes="[10, 20, 30, 40,50]"
+        :size-change.sync="per_page"
          @current-change="currentChange"
+        @size-change="handleSizeChange"
         >
    </el-pagination>
 </el-card>
@@ -71,7 +83,7 @@ export default {
   data () {
     return {
       comments: [],
-      per_page: 20, // 每页数据
+      per_page: 10, // 每页数据
       totalCount: 0, // 总数据
       page: 1, // 页数
       loading: true
@@ -81,45 +93,68 @@ export default {
   watch: {},
   methods: {
     // 获取评论
-    getComment (page) {
+    getComment () {
       this.loading = true
       getComment({
-        page,
+        page: this.page,
         response_type: 'comment',
         per_page: this.per_page
       }).then(res => {
         // console.log(res)
         this.loading = false
-        this.comments = res.data.data.results
+        // this.comments = res.data.data.results
+        const results = res.data.data.results
+        // 给每个results设置loading
+        results.forEach(comment => {
+          // loading 默认false
+          comment.loading = false
+        })
+        // 赋值
+        this.comments = results
+        // 总数居
         this.totalCount = res.data.data.total_count
       })
     },
     // 分页
     currentChange (page) {
-      this.getComment(page)
+      this.page = page
+      this.getComment()
+    },
+    handleSizeChange (pageSize) {
+      this.page = 1
+      this.per_page = pageSize
+      this.getComment()
     },
     // 打开关闭评论
-    operationComment (id, status) {
-      const articleid = id.join('')
-      //   console.log(id)
-      this.$confirm(status ? '亲，您是否要打开当前文章评论功能?' : '亲，您是否要关闭当前文章评论功能，如果关闭读者将无法对这篇文章进行评论',
-        '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-        this.$message({
-          type: 'success',
-          message: status ? '已打开评论' : '已关闭评论',
-          center: true
-        })
-        updateComment({
-          article_id: articleid
-        }, { allow_comment: status }).then(res => {
+    operationComment (article) {
+      // 禁用
+      article.loading = true
+      updateComment({
+        article_id: article.id.toString()
+      }, { allow_comment: article.comment_status }).then(res => {
+        // 启用
+        article.loading = false
         // console.log(res)
-          this.getComment()
-        })
+        // this.getComment()
       })
+      // const id = id.c
+      // const articleid = article.id.c.join('')
+      // console.log(commentStatus)
+      //   console.log(id)
+      // const articleid = article.id.toString()
+      // console.log(articleid)
+      // this.$confirm(article.comment_status ? '亲，您是否要打开当前文章评论功能?' : '亲，您是否要关闭当前文章评论功能，如果关闭读者将无法对这篇文章进行评论',
+      //   '提示', {
+      //     confirmButtonText: '确定',
+      //     cancelButtonText: '取消',
+      //     type: 'warning'
+      //   }).then(() => {
+      //   this.$message({
+      //     type: 'success',
+      //     message: article.comment_status ? '已打开评论' : '已关闭评论',
+      //     center: true
+      //   })
+      // })
     }
   },
   created () {
