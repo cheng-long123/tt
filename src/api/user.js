@@ -20,3 +20,11 @@ export const getUserinfor = () => {
 
   })
 }
+// 编辑用户基本资料
+export const upUserinfor = data => {
+  return request({
+    method: 'PATCH',
+    url: '/mp/v1_0/user/profile',
+    data
+  })
+}

@@ -17,15 +17,15 @@
         ></i>
         <div class="head-font">江苏传智播客科技教育有限公司</div>
         <el-dropdown class="head-right">
-          <div class="avatar-wrap">
-            <img class="avatar" :src="user.photo" alt />
-            <span class="el-dropdown-link">
+          <div class="avatar-wrap"  >
+            <img class="avatar" :src="user.photo" alt  @click="$router.push('/setting')"/>
+            <span class="el-dropdown-link" >
               {{user.name}}
               <i class="el-icon-arrow-down el-icon--right"></i>
             </span>
           </div>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>
+            <el-dropdown-item @click.native="$router.push('/setting')" >
               <i class="el-icon-setting"></i>
               个人设置
             </el-dropdown-item>
