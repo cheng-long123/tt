@@ -9,20 +9,20 @@
       </div>
           <el-row>
               <el-col :span="10">
-                <el-form ref="form" :model="user" style="" label-width="80px">
+                <el-form ref="form-user" :model="user" :rules="formRules" label-width="80px">
               <el-form-item label="编号">
                 {{user.id}}
               </el-form-item>
               <el-form-item label="手机">
                {{user.mobile}}
               </el-form-item>
-              <el-form-item label="媒体名称">
+              <el-form-item label="媒体名称" prop="name">
                 <el-input v-model="user.name"></el-input>
               </el-form-item>
-              <el-form-item label="媒体介绍">
+              <el-form-item label="媒体介绍" prop="intro">
                 <el-input type="textarea"  v-model="user.intro"></el-input>
               </el-form-item>
-                <el-form-item label="邮箱">
+                <el-form-item label="邮箱" prop="email">
                 <el-input v-model="user.email"></el-input>
               </el-form-item>
               <el-form-item>
@@ -33,6 +33,7 @@
               <el-col :span="5" :offset="5">
                <label for="file">
                   <el-avatar
+                  class="avatar"
                   shape="square"
                   :size="200"
                   fit="contain"
@@ -87,7 +88,21 @@ export default {
         mobile: '' // 手机号
       },
       dialogVisible: false, // Dialog显示与隐藏
-      previewImage: ''
+      previewImage: '',
+      formRules: {
+        name: [
+          { required: true, message: '媒体名称不能为空！', trigger: 'blur' },
+          { min: 2, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
+        ],
+        intro: [
+          { required: true, message: '媒体介绍不能为空！', trigger: 'blur' },
+          { min: 10, message: '必须 10 个字符以上', trigger: 'blur' }
+        ],
+        email: [
+          { required: true, message: '邮箱不能为空！', trigger: 'blur' },
+          { pattern: /^([a-zA-Z]|[0-9])(\w|-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/, message: '邮箱格式不正确！', trigger: 'blur' }
+        ]
+      }
     }
   },
   computed: {},
@@ -109,17 +124,24 @@ export default {
       // console.log(blobData)
     },
     upUserinfor () {
-      upUserinfor({
-        name: this.user.name,
-        intro: this.user.intro,
-        email: this.user.email
-      }).then(res => {
-        this.$message({
-          message: '修改资料成功',
-          type: 'success',
-          center: true
-        })
-        this.getUserinfor()
+      this.$refs['form-user'].validate(value => {
+        // console.log(value)
+        if (value) {
+          upUserinfor({
+            name: this.user.name,
+            intro: this.user.intro,
+            email: this.user.email
+          }).then(res => {
+            this.$message({
+              message: '修改资料成功',
+              type: 'success',
+              center: true
+            })
+            this.getUserinfor()
+          })
+        } else {
+          return false
+        }
       })
     }
   },
@@ -131,6 +153,9 @@ export default {
 }
 </script>
 <style lang='less' scoped>
+.avatar:hover{
+  border: 1px dashed #409eff;
+}
 .upavatar{
   margin-right: 20px;
   text-align: center;
