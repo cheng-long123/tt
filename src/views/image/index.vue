@@ -51,11 +51,13 @@
                 'el-icon-star-off': !image.is_collected,
                 'el-icon-star-on': image.is_collected
                 }"
+                :disabled="loading"
                 @click=collectImage(image)></span>
             <span class=" el-icon-delete" @click="delImage(image.id)"></span>
         </div>
        <el-image
-        style="width:100%; height:180px"
+       class="fodder-img"
+        style="width:100%; height:300px;"
         :src="image.url"
         fit="cover">
       </el-image>
@@ -122,6 +124,8 @@ export default {
     },
     collectChange (value) {
       this.collect = value
+      this.page = 1
+      // this.page = page
       this.getImage()
     //   console.log(value)
     },
@@ -139,7 +143,7 @@ export default {
     },
     // 收藏图片
     collectImage (imageId) {
-      console.log(this.images)
+      // console.log(this.images)
       collectImage(!imageId.is_collected, imageId.id).then(res => {
         // console.log(res)
         if (!imageId.is_collected) {
@@ -157,7 +161,8 @@ export default {
             center: true
           })
         }
-        this.getImage()
+        // this.getImage()
+        imageId.is_collected = !imageId.is_collected
       })
     },
     // 删除图片

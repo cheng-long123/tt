@@ -18,10 +18,10 @@ export const getImage = params => {
   })
 }
 // 收藏图片素材
-export const collectImage = (collect, targetId) => {
+export const collectImage = (collect, imageId) => {
   return request({
     method: 'PUT',
-    url: `/mp/v1_0/user/images/${targetId}`,
+    url: `/mp/v1_0/user/images/${imageId}`,
     data: {
       collect
     }

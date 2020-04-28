@@ -8,7 +8,6 @@
    </el-breadcrumb>
   </div>
   <el-table
-       v-loading="loading"
       :data="comments"
       style="width: 100%">
       <el-table-column
@@ -89,7 +88,7 @@ export default {
         response_type: 'comment',
         per_page: this.per_page
       }).then(res => {
-        console.log(res)
+        // console.log(res)
         this.loading = false
         this.comments = res.data.data.results
         this.totalCount = res.data.data.total_count
@@ -119,11 +118,6 @@ export default {
         }, { allow_comment: status }).then(res => {
         // console.log(res)
           this.getComment()
-        })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
         })
       })
     }

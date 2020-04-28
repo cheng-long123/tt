@@ -47,7 +47,7 @@
           </el-date-picker>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" :disabled="loading" @click="getArticle()">查询</el-button>
+                <el-button type="primary" :disabled="loading" @click="getArticle(page=1)">查询</el-button>
             </el-form-item>
             </el-form>
             <!-- /内容管理筛选 -->
@@ -187,7 +187,7 @@ export default {
     getArticle (page = 1) {
       this.loading = true
       getArticle({
-        page,
+        page: this.page,
         per_page: this.pageSize,
         status: this.status,
         channel_id: this.channelId,
@@ -207,7 +207,8 @@ export default {
     // 分页
     currentChange (page) {
       // console.log(page)
-      this.getArticle(page)
+      this.page = page
+      this.getArticle()
     },
     // 获取频道
     getChannels () {
