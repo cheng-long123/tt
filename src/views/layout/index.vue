@@ -18,7 +18,14 @@
         <div class="head-font">江苏传智播客科技教育有限公司</div>
         <el-dropdown class="head-right">
           <div class="avatar-wrap"  >
-            <img class="avatar" :src="user.photo" alt  @click="$router.push('/setting')"/>
+             <el-image
+              class="avatar"
+              :src="user.photo"
+              fit="cover"
+               @click="$router.push('/setting')"
+              >
+              </el-image>
+            <!-- <img class="avatar" :src="user.photo" alt  @click="$router.push('/setting')"/> -->
             <span class="el-dropdown-link" >
               {{user.name}}
               <i class="el-icon-arrow-down el-icon--right"></i>
@@ -48,6 +55,7 @@
 import AppAside from './components/aside'
 // import AppHeader from './components/header'
 import { getUserinfor } from '@/api/user'
+import globalBus from '@/utils/global-bus'
 export default {
   name: 'LayoutIndex',
   props: {},
@@ -73,6 +81,11 @@ export default {
       getUserinfor().then((res) => {
         // console.log(res)
         this.user = res.data.data
+        globalBus.$on('user-info', (data) => {
+          // console.log(13)
+          this.user.photo = data.photo
+          this.user.name = data.name
+        })
       })
     },
     // 退出登录

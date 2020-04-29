@@ -26,7 +26,12 @@
                 <el-input v-model="user.email"></el-input>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="upUserinfor">保存设置</el-button>
+                <el-button
+                type="primary"
+                @click="upUserinfor"
+                 :disabled="updateUserinfoLoding"
+                >
+                保存设置</el-button>
               </el-form-item>
           </el-form>
               </el-col>
@@ -36,7 +41,7 @@
                   class="avatar"
                   shape="square"
                   :size="200"
-                  fit="contain"
+                  fit="cover"
                   :src="user.photo">
                 </el-avatar>
                </label>
@@ -48,21 +53,31 @@
           <el-dialog
             title="修改头像"
               width="30%"
-            append-to-body
-            :visible.sync="dialogVisible">
-               <el-image
-                :src="previewImage"
-                fit="cover">
-              </el-image>
+              append-to-body
+              :visible.sync="dialogVisible"
+              @opened="dialogOpened"
+              @closed="dialogClosed"
+             >
+             <div class="previewImage">
+               <img id="image" class="preview-image" ref="image" :src="previewImage">
+            </div>
             <span slot="footer" class="dialog-footer">
               <el-button @click="dialogVisible = false">取 消</el-button>
-              <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+              <el-button
+              type="primary"
+              @click="upUserPhoto"
+              :disabled="updateUserPhotoloading"
+              >
+              确 定</el-button>
             </span>
         </el-dialog>
   </div>
 </template>
 <script>
-import { getUserinfor, upUserinfor } from '@/api/user'
+import { getUserinfor, upUserinfor, upUserPhoto } from '@/api/user'
+import globalBus from '@/utils/global-bus'
+import 'cropperjs/dist/cropper.css'
+import Cropper from 'cropperjs'
 export default {
   name: 'SettingIndex',
   props: {},
@@ -89,6 +104,9 @@ export default {
       },
       dialogVisible: false, // Dialog显示与隐藏
       previewImage: '',
+      cropper: null, // cropper对象
+      updateUserinfoLoding: false,
+      updateUserPhotoloading: false,
       formRules: {
         name: [
           { required: true, message: '媒体名称不能为空！', trigger: 'blur' },
@@ -121,10 +139,45 @@ export default {
       const file = this.$refs.file
       const blobData = window.URL.createObjectURL(file.files[0])
       this.previewImage = blobData
+      this.$refs.file.value = ''
       // console.log(blobData)
     },
+    // 创建裁剪
+    dialogOpened () {
+      const image = this.$refs.image
+      this.cropper = new Cropper(image, {
+        viewMode: 1,
+        dragMode: 'none'
+      })
+    },
+    // 销毁裁剪
+    dialogClosed () {
+      this.cropper.destroy()
+    },
+    // 更新用户头像
+    upUserPhoto () {
+      this.cropper.getCroppedCanvas().toBlob(file => {
+        this.updateUserPhotoloading = true
+        const fd = new FormData()
+        fd.append('photo', file)
+        upUserPhoto(fd).then(res => {
+          console.log(res)
+          this.dialogVisible = false
+          this.$message({
+            message: '头像修改成功',
+            type: 'success',
+            center: true
+          })
+          this.updateUserPhotoloading = false
+          this.user.photo = window.URL.createObjectURL(file)
+          globalBus.$emit('user-info', this.user)
+        })
+      })
+    },
+    // 修该用户资料
     upUserinfor () {
       this.$refs['form-user'].validate(value => {
+        this.updateUserinfoLoding = true
         // console.log(value)
         if (value) {
           upUserinfor({
@@ -137,6 +190,8 @@ export default {
               type: 'success',
               center: true
             })
+            this.updateUserinfoLoding = false
+            globalBus.$emit('user-info', this.user)
             this.getUserinfor()
           })
         } else {
@@ -155,9 +210,19 @@ export default {
 <style lang='less' scoped>
 .avatar:hover{
   border: 1px dashed #409eff;
+  border-radius: 5px;
 }
 .upavatar{
   margin-right: 20px;
   text-align: center;
+}
+.previewImage{
+  .preview-image {
+    display: block;
+  height: 200px;
+  /* This rule is very important, please don't ignore this */
+  max-width: 100%;
+  margin: 0 auto;
+}
 }
 </style>

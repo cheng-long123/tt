@@ -8,7 +8,6 @@ import ElementUI from 'element-ui'
 import { ElementTiptapPlugin } from 'element-tiptap'
 // 加载 element 组件库样式
 import 'element-ui/lib/theme-chalk/index.css'
-
 // 加载全局样式
 // import './style/index.less'
 // 声明语言
