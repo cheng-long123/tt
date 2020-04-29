@@ -8,7 +8,7 @@
              </el-breadcrumb>
             </div>
           <el-tabs v-model="activeName" type="card">
-            <el-tab-pane v-loading="loading" label="用户管理" name="first">
+            <el-tab-pane v-loading="loading" label="粉丝列表" name="first">
               <el-row class="row" :gutter="20">
               <el-col
               v-for="(fans, index) in fanss"
@@ -36,8 +36,8 @@
               :total="totalCount">
            </el-pagination>
             </el-tab-pane>
-            <el-tab-pane label="配置管理" name="second">
-              <div id="main"></div>
+            <el-tab-pane label="粉丝画像" name="second">
+              <div id="main" ref="main"></div>
             </el-tab-pane>
           </el-tabs>
          </el-card>
@@ -45,6 +45,8 @@
 </template>
 <script>
 import { getFans } from '@/api/comment'
+// import MapDemo from './components/map-demo'
+import echarts from 'echarts'
 export default {
   name: 'FansIndex',
   props: {},
@@ -83,7 +85,68 @@ export default {
   created () {
     this.getFans()
   },
-  mounted () {},
+  mounted () {
+    // 基于准备好的dom，初始化echarts实例
+    const myChart = echarts.init(this.$refs.main)
+    // console.log(myChart)
+    var option = {
+      color: ['#3398DB'],
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: { // 坐标轴指示器，坐标轴触发有效
+          type: 'shadow'// 默认为直线，可选为：'line' | 'shadow'
+        }
+      },
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+      },
+      xAxis: [
+        {
+          type: 'category',
+          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          axisTick: {
+            alignWithLabel: true
+          }
+        }
+      ],
+      yAxis: [
+        {
+          type: 'value'
+        }
+      ],
+      series: [
+        {
+          name: '直接访问',
+          type: 'bar',
+          barWidth: '60%',
+          data: [10, 52, 200, 334, 390, 330, 220]
+        }
+      ]
+    }
+    // var option = {
+    //   title: {
+    //     text: 'ECharts 入门示例'
+    //   },
+    //   tooltip: {},
+    //   legend: {
+    //     data: ['销量']
+    //   },
+    //   xAxis: {
+    //     data: ['衬衫', '羊毛衫', '雪纺衫', '裤子', '高跟鞋', '袜子']
+    //   },
+    //   yAxis: {},
+    //   series: [{
+    //     name: '销量',
+    //     type: 'bar',
+    //     data: [5, 20, 36, 10, 10, 20]
+    //   }]
+    // }
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option)
+  },
   beforeDestroy () {}
 }
 </script>
@@ -110,5 +173,9 @@ export default {
        display: block;
       margin:0 auto;
      }
+}
+#main{
+  width: 700px;
+  height: 500px;
 }
 </style>
