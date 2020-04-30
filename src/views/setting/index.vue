@@ -29,7 +29,6 @@
                 <el-button
                 type="primary"
                 @click="upUserinfor"
-                 :disabled="updateUserinfoLoding"
                 >
                 保存设置</el-button>
               </el-form-item>
@@ -105,7 +104,6 @@ export default {
       dialogVisible: false, // Dialog显示与隐藏
       previewImage: '',
       cropper: null, // cropper对象
-      updateUserinfoLoding: false,
       updateUserPhotoloading: false,
       formRules: {
         name: [
@@ -129,7 +127,6 @@ export default {
     // 获取用户资料
     getUserinfor () {
       getUserinfor().then(res => {
-        // console.log(res)
         this.user = res.data.data
       })
     },
@@ -140,7 +137,6 @@ export default {
       const blobData = window.URL.createObjectURL(file.files[0])
       this.previewImage = blobData
       this.$refs.file.value = ''
-      // console.log(blobData)
     },
     // 创建裁剪
     dialogOpened () {
@@ -161,7 +157,6 @@ export default {
         const fd = new FormData()
         fd.append('photo', file)
         upUserPhoto(fd).then(res => {
-          console.log(res)
           this.dialogVisible = false
           this.$message({
             message: '头像修改成功',
@@ -177,8 +172,6 @@ export default {
     // 修该用户资料
     upUserinfor () {
       this.$refs['form-user'].validate(value => {
-        this.updateUserinfoLoding = true
-        // console.log(value)
         if (value) {
           upUserinfor({
             name: this.user.name,
@@ -190,7 +183,6 @@ export default {
               type: 'success',
               center: true
             })
-            this.updateUserinfoLoding = false
             globalBus.$emit('user-info', this.user)
             this.getUserinfor()
           })

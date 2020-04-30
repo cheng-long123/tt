@@ -45,7 +45,6 @@
 </template>
 <script>
 import { getFans } from '@/api/comment'
-// import MapDemo from './components/map-demo'
 import echarts from 'echarts'
 export default {
   name: 'FansIndex',
@@ -70,7 +69,6 @@ export default {
         page: this.page,
         per_page: this.per_page
       }).then(res => {
-        // console.log(res)
         this.fanss = res.data.data.results
         this.totalCount = res.data.data.total_count
         this.loading = false
@@ -79,7 +77,6 @@ export default {
     fansCurrentChanage (page) {
       this.page = page
       this.getFans()
-      // console.log(page)
     }
   },
   created () {
@@ -88,7 +85,6 @@ export default {
   mounted () {
     // 基于准备好的dom，初始化echarts实例
     const myChart = echarts.init(this.$refs.main)
-    // console.log(myChart)
     var option = {
       color: ['#3398DB'],
       tooltip: {

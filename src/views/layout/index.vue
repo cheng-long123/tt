@@ -21,7 +21,7 @@
              <el-image
               class="avatar"
               :src="user.photo"
-              fit="cover"
+               fit="cover"
                @click="$router.push('/setting')"
               >
               </el-image>
@@ -79,10 +79,8 @@ export default {
     // 获取用户信息
     getUserinfor () {
       getUserinfor().then((res) => {
-        // console.log(res)
         this.user = res.data.data
         globalBus.$on('user-info', (data) => {
-          // console.log(13)
           this.user.photo = data.photo
           this.user.name = data.name
         })
@@ -90,7 +88,6 @@ export default {
     },
     // 退出登录
     onLogout () {
-      // console.log(123)
       this.$confirm('你确定要退出吗？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

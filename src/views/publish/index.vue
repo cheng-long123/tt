@@ -22,6 +22,21 @@
                 <el-radio :label="0">无图</el-radio>
                 <el-radio :label="-1">自动</el-radio>
                 </el-radio-group>
+                <template>
+                  <upload-cover
+                  v-for="(cover, index) in article.cover.type"
+                  :key="index"
+                  v-model="article.cover.images[index]"
+                  >
+                  <!-- <upload-cover
+                  v-for="(cover, index) in article.cover.type"
+                  :key="index"
+                  :cover-image="article.cover.images[index]"
+                  @update-cover="onUpdateCover(index,$event)"
+                  > -->
+
+                  </upload-cover>
+                </template>
             </el-form-item>
             <el-form-item label="频道" prop="channel_id">
                 <el-select v-model="article.channel_id"  placeholder="请选择频道">
@@ -50,6 +65,7 @@ import {
   updateArticle
 } from '@/api/article'
 import { uploadImage } from '@/api/image'
+import UploadCover from './components/upload-cover'
 // import element-tiptap 样式
 import 'element-tiptap/lib/index.css'
 
@@ -97,7 +113,8 @@ export default {
   name: 'PublishIndex',
   props: {},
   components: {
-    'el-tiptap': ElementTiptap
+    'el-tiptap': ElementTiptap,
+    UploadCover
   },
   data () {
     return {
@@ -105,7 +122,7 @@ export default {
         title: '',
         content: '',
         cover: {
-          type: 0,
+          type: 1,
           images: []
         },
         channel_id: null
@@ -185,13 +202,9 @@ export default {
   computed: {},
   watch: {},
   methods: {
-    onSubmit () {
-      console.log('submit!')
-    },
     // 获取频道
     getChannels () {
       getArticleChannels().then(res => {
-        // console.log(res)
         this.channels = res.data.data.channels
       })
     },
@@ -204,7 +217,6 @@ export default {
           // 判断是否有id 如果有执行修改 没有执行添加
           if (articleId) {
             updateArticle(articleId, this.article, draft).then(res => {
-              console.log(res)
               if (draft === false) {
                 this.$message({
                   message: '修改成功',
@@ -222,7 +234,6 @@ export default {
             })
           } else {
             addArticle(this.article, draft).then(res => {
-              console.log(res)
               if (draft === false) {
                 this.$message({
                   message: '发布成功',
@@ -245,9 +256,11 @@ export default {
     // 获取指定文章
     getAppointArticle () {
       getAppointArticle(this.$route.query.id).then(res => {
-        // console.log(res)
         this.article = res.data.data
       })
+    },
+    onUpdateCover (index, url) {
+      this.article.cover.images[index] = url
     }
   },
   created () {

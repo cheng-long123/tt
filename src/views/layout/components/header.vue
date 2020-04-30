@@ -40,7 +40,6 @@ export default {
   methods: {
     getUserinfor () {
       getUserinfor().then((res) => {
-        // console.log(res)
         this.user = res.data.data
       })
     }

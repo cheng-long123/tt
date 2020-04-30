@@ -194,32 +194,25 @@ export default {
         begin_pubdate: this.rangeDate ? this.rangeDate[0] : null, // 起始时间
         end_pubdate: this.rangeDate ? this.rangeDate[1] : null // 截止时间
       }).then(res => {
-        // console.log(res)
         this.loading = false
         const { results, total_count: TotalCount } = res.data.data
         this.articles = results
         this.totalCount = TotalCount
       })
     },
-    onSubmit () {
-      console.log('submit!')
-    },
     // 分页
     currentChange (page) {
-      // console.log(page)
       this.page = page
       this.getArticle()
     },
     // 获取频道
     getChannels () {
       getArticleChannels().then(res => {
-        // console.log(res)
         this.channels = res.data.data.channels
       })
     },
     // 删除功能
     onDeleteArticle (articleId) {
-      // console.log(articleId)
       this.$confirm('你确定要删除吗？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -227,7 +220,6 @@ export default {
       }).then(() => {
         // 转换为字符串格式
         deleteArticle(articleId.toString()).then(res => {
-          // console.log(res)
           this.$message({
             message: '删除成功',
             type: 'success',

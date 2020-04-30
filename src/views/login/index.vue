@@ -81,7 +81,6 @@ export default {
       //  发送请求
       login(this.user).then((res) => {
         // 登录成功
-        // console.log(res)
 
         this.$message({
           message: '登陆成功',
@@ -99,10 +98,8 @@ export default {
         this.$router.push({
           name: 'home'
         })
-        // console.log(res)
       }).catch(() => {
-        // 登陆失败
-        // console.log(err)
+      // 登陆失败
         this.$message.error({
           message: '登陆失败,手机号或密码错误',
           center: true,

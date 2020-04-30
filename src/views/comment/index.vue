@@ -100,7 +100,6 @@ export default {
         response_type: 'comment',
         per_page: this.per_page
       }).then(res => {
-        // console.log(res)
         this.loading = false
         // this.comments = res.data.data.results
         const results = res.data.data.results
@@ -134,15 +133,11 @@ export default {
       }, { allow_comment: article.comment_status }).then(res => {
         // 启用
         article.loading = false
-        // console.log(res)
-        // this.getComment()
+      // this.getComment()
       })
       // const id = id.c
       // const articleid = article.id.c.join('')
-      // console.log(commentStatus)
-      //   console.log(id)
       // const articleid = article.id.toString()
-      // console.log(articleid)
       // this.$confirm(article.comment_status ? '亲，您是否要打开当前文章评论功能?' : '亲，您是否要关闭当前文章评论功能，如果关闭读者将无法对这篇文章进行评论',
       //   '提示', {
       //     confirmButtonText: '确定',
