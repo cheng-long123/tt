@@ -64,7 +64,7 @@
       </el-image>
         <div
         class="selected"
-        v-if="selected === index"
+        v-if="selected === index && isShowCheck"
         >
           <img src="./selected.png" alt="">
         </div>
@@ -95,6 +95,10 @@ export default {
     isShowAction: {
       type: Boolean,
       default: false
+    },
+    isShowCheck: {
+      type: Boolean,
+      default: true
     }
   },
   components: {},

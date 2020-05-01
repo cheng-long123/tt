@@ -9,6 +9,7 @@
   </div>
   <image-list
   :is-show-action="true"
+  :is-show-check="false"
   />
 </el-card>
 </div>
