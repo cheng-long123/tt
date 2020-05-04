@@ -112,7 +112,7 @@ export default {
         ],
         intro: [
           { required: true, message: '媒体介绍不能为空！', trigger: 'blur' },
-          { min: 10, message: '必须 10 个字符以上', trigger: 'blur' }
+          { min: 1, message: '必须 1 个字符以上', trigger: 'blur' }
         ],
         email: [
           { required: true, message: '邮箱不能为空！', trigger: 'blur' },
