@@ -1,15 +1,15 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 // 登录
-import Login from '@/views/login'
-import Home from '@/views/home'
-import Layout from '@/views/layout'
-import Article from '@/views/article'
-import Publish from '@/views/publish'
-import Image from '@/views/image'
-import Comment from '@/views/comment'
-import Setting from '@/views/setting'
-import Fans from '@/views/fans'
+const Login = () => import('@/views/login')
+const Home = () => import('@/views/home')
+const Layout = () => import('@/views/layout')
+const Article = () => import('@/views/article')
+const Publish = () => import('@/views/publish')
+const Image = () => import('@/views/image')
+const Comment = () => import('@/views/comment')
+const Setting = () => import('@/views/setting')
+const Fans = () => import('@/views/fans')
 Vue.use(VueRouter)
 
 const routes = [

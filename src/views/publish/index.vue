@@ -212,52 +212,49 @@ export default {
     onPublish (draft = false) {
       // 获取id
       const articleId = this.$route.query.id
-      this.$refs['publish-article'].validate(value => {
+      this.$refs['publish-article'].validate(async value => {
         if (value) {
           // 判断是否有id 如果有执行修改 没有执行添加
           if (articleId) {
-            updateArticle(articleId, this.article, draft).then(res => {
-              if (draft === false) {
-                this.$message({
-                  message: '修改成功',
-                  type: 'success',
-                  center: true
-                })
-              } else {
-                this.$message({
-                  message: '修改草稿成功',
-                  type: 'success',
-                  center: true
-                })
-              }
-              this.$router.push('/article')
-            })
+            const res = await updateArticle(articleId, this.article, draft)
+            if (draft === false) {
+              this.$message({
+                message: '修改成功',
+                type: 'success',
+                center: true
+              })
+            } else {
+              this.$message({
+                message: '修改草稿成功',
+                type: 'success',
+                center: true
+              })
+            }
+            this.$router.push('/article')
           } else {
-            addArticle(this.article, draft).then(res => {
-              if (draft === false) {
-                this.$message({
-                  message: '发布成功',
-                  type: 'success',
-                  center: true
-                })
-              } else {
-                this.$message({
-                  message: '草稿发布成功',
-                  type: 'success',
-                  center: true
-                })
-              }
-              this.$router.push('/article')
-            })
+            const res = await addArticle(this.article, draft)
+            if (draft === false) {
+              this.$message({
+                message: '发布成功',
+                type: 'success',
+                center: true
+              })
+            } else {
+              this.$message({
+                message: '草稿发布成功',
+                type: 'success',
+                center: true
+              })
+            }
+            this.$router.push('/article')
           }
         }
       })
     },
     // 获取指定文章
-    getAppointArticle () {
-      getAppointArticle(this.$route.query.id).then(res => {
-        this.article = res.data.data
-      })
+    async getAppointArticle () {
+      const res = await getAppointArticle(this.$route.query.id)
+      this.article = res.data.data
     },
     onUpdateCover (index, url) {
       this.article.cover.images[index] = url

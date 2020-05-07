@@ -123,17 +123,16 @@ export default {
   watch: {},
   methods: {
     // 获取图片素材
-    getImage () {
+    async getImage () {
       this.loading = true
-      getImage({
+      const res = await getImage({
         collect: this.collect,
         page: this.page,
         per_page: this.pageSize
-      }).then(res => {
-        this.loading = false
-        this.images = res.data.data.results
-        this.totalCount = res.data.data.total_count
       })
+      this.loading = false
+      this.images = res.data.data.results
+      this.totalCount = res.data.data.total_count
     },
     // 分页
     currentChange (page) {
@@ -159,26 +158,25 @@ export default {
       this.getImage()
     },
     // 收藏图片
-    collectImage (imageId) {
-      collectImage(!imageId.is_collected, imageId.id).then(res => {
-        if (!imageId.is_collected) {
-          this.$message({
-            showClose: true,
-            message: '收藏成功',
-            type: 'success',
-            center: true
-          })
-        } else {
-          this.$message({
-            showClose: true,
-            message: '取消收藏',
-            type: 'success',
-            center: true
-          })
-        }
-        // this.getImage()
-        imageId.is_collected = !imageId.is_collected
-      })
+    async collectImage (imageId) {
+      const res = await collectImage(!imageId.is_collected, imageId.id)
+      if (!imageId.is_collected) {
+        this.$message({
+          showClose: true,
+          message: '收藏成功',
+          type: 'success',
+          center: true
+        })
+      } else {
+        this.$message({
+          showClose: true,
+          message: '取消收藏',
+          type: 'success',
+          center: true
+        })
+      }
+      // this.getImage()
+      imageId.is_collected = !imageId.is_collected
     },
     // 删除图片
     delImage (imageId) {
@@ -186,16 +184,15 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(() => {
-        delImage(imageId).then(res => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!',
-            center: true
-          })
-          // 重新渲染
-          this.getImage()
+      }).then(async () => {
+        const res = await delImage(imageId)
+        this.$message({
+          type: 'success',
+          message: '删除成功!',
+          center: true
         })
+        // 重新渲染
+        this.getImage()
       }).catch(() => {
         this.$message({
           type: 'info',

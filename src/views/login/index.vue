@@ -73,13 +73,14 @@ export default {
         }
       })
     },
-    Login () {
+    async Login () {
       // 禁用按钮
       this.LoginLoading = true
-      // // 接收
+      try {
+        // // 接收
       // const user = this.user
       //  发送请求
-      login(this.user).then((res) => {
+        const res = await login(this.user)
         // 登录成功
 
         this.$message({
@@ -98,8 +99,8 @@ export default {
         this.$router.push({
           name: 'home'
         })
-      }).catch(() => {
-      // 登陆失败
+      } catch (err) {
+        // 登陆失败
         this.$message.error({
           message: '登陆失败,手机号或密码错误',
           center: true,
@@ -107,7 +108,7 @@ export default {
         })
         // 按钮 解禁
         this.LoginLoading = false
-      })
+      }
     }
   },
   created () { },

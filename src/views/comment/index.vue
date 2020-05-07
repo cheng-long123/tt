@@ -93,26 +93,25 @@ export default {
   watch: {},
   methods: {
     // 获取评论
-    getComment () {
+    async getComment () {
       this.loading = true
-      getComment({
+      const res = await getComment({
         page: this.page,
         response_type: 'comment',
         per_page: this.per_page
-      }).then(res => {
-        this.loading = false
-        // this.comments = res.data.data.results
-        const results = res.data.data.results
-        // 给每个results设置loading
-        results.forEach(comment => {
-          // loading 默认false
-          comment.loading = false
-        })
-        // 赋值
-        this.comments = results
-        // 总数居
-        this.totalCount = res.data.data.total_count
       })
+      this.loading = false
+      // this.comments = res.data.data.results
+      const results = res.data.data.results
+      // 给每个results设置loading
+      results.forEach(comment => {
+        // loading 默认false
+        comment.loading = false
+      })
+      // 赋值
+      this.comments = results
+      // 总数居
+      this.totalCount = res.data.data.total_count
     },
     // 分页
     currentChange (page) {
@@ -125,16 +124,15 @@ export default {
       this.getComment()
     },
     // 打开关闭评论
-    operationComment (article) {
+    async operationComment (article) {
       // 禁用
       article.loading = true
-      updateComment({
+      const res = await updateComment({
         article_id: article.id.toString()
-      }, { allow_comment: article.comment_status }).then(res => {
-        // 启用
-        article.loading = false
+      }, { allow_comment: article.comment_status })
+      // 启用
+      article.loading = false
       // this.getComment()
-      })
       // const id = id.c
       // const articleid = article.id.c.join('')
       // const articleid = article.id.toString()

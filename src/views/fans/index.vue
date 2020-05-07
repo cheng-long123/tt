@@ -63,16 +63,15 @@ export default {
   computed: {},
   watch: {},
   methods: {
-    getFans () {
+    async getFans () {
       this.loading = true
-      getFans({
+      const res = await getFans({
         page: this.page,
         per_page: this.per_page
-      }).then(res => {
-        this.fanss = res.data.data.results
-        this.totalCount = res.data.data.total_count
-        this.loading = false
       })
+      this.fanss = res.data.data.results
+      this.totalCount = res.data.data.total_count
+      this.loading = false
     },
     fansCurrentChanage (page) {
       this.page = page

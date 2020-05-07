@@ -184,21 +184,20 @@ export default {
   watch: {},
   methods: {
     // 获取列表信息
-    getArticle (page = 1) {
+    async getArticle (page = 1) {
       this.loading = true
-      getArticle({
+      const res = await getArticle({
         page: this.page,
         per_page: this.pageSize,
         status: this.status,
         channel_id: this.channelId,
         begin_pubdate: this.rangeDate ? this.rangeDate[0] : null, // 起始时间
         end_pubdate: this.rangeDate ? this.rangeDate[1] : null // 截止时间
-      }).then(res => {
-        this.loading = false
-        const { results, total_count: TotalCount } = res.data.data
-        this.articles = results
-        this.totalCount = TotalCount
       })
+      this.loading = false
+      const { results, total_count: TotalCount } = res.data.data
+      this.articles = results
+      this.totalCount = TotalCount
     },
     // 分页
     currentChange (page) {
@@ -206,10 +205,9 @@ export default {
       this.getArticle()
     },
     // 获取频道
-    getChannels () {
-      getArticleChannels().then(res => {
-        this.channels = res.data.data.channels
-      })
+    async getChannels () {
+      const res = await getArticleChannels()
+      this.channels = res.data.data.channels
     },
     // 删除功能
     onDeleteArticle (articleId) {
@@ -217,16 +215,15 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(() => {
+      }).then(async () => {
         // 转换为字符串格式
-        deleteArticle(articleId.toString()).then(res => {
-          this.$message({
-            message: '删除成功',
-            type: 'success',
-            center: true
-          })
-          this.getArticle(this.page)
+        const res = await deleteArticle(articleId.toString())
+        this.$message({
+          message: '删除成功',
+          type: 'success',
+          center: true
         })
+        this.getArticle(this.page)
       }).catch(() => {
         this.$message({
           type: 'info',

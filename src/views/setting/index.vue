@@ -125,10 +125,9 @@ export default {
   watch: {},
   methods: {
     // 获取用户资料
-    getUserinfor () {
-      getUserinfor().then(res => {
-        this.user = res.data.data
-      })
+    async getUserinfor () {
+      const res = await getUserinfor()
+      this.user = res.data.data
     },
     // 头像
     fileChange () {
@@ -150,42 +149,46 @@ export default {
     dialogClosed () {
       this.cropper.destroy()
     },
-    // 更新用户头像
-    upUserPhoto () {
-      this.cropper.getCroppedCanvas().toBlob(file => {
-        this.updateUserPhotoloading = true
-        const fd = new FormData()
-        fd.append('photo', file)
-        upUserPhoto(fd).then(res => {
-          this.dialogVisible = false
-          this.$message({
-            message: '头像修改成功',
-            type: 'success',
-            center: true
-          })
-          this.updateUserPhotoloading = false
-          this.user.photo = window.URL.createObjectURL(file)
-          globalBus.$emit('user-info', this.user)
+    getCroppedCanvas () {
+      return new Promise((resolve, reject) => {
+        this.cropper.getCroppedCanvas().toBlob(file => {
+          resolve(file)
         })
       })
     },
+    // 更新用户头像
+    async upUserPhoto () {
+      const file = await this.getCroppedCanvas()
+      this.updateUserPhotoloading = true
+      const fd = new FormData()
+      fd.append('photo', file)
+      const res = await upUserPhoto(fd)
+      this.dialogVisible = false
+      this.$message({
+        message: '头像修改成功',
+        type: 'success',
+        center: true
+      })
+      this.updateUserPhotoloading = false
+      this.user.photo = window.URL.createObjectURL(file)
+      globalBus.$emit('user-info', this.user)
+    },
     // 修该用户资料
     upUserinfor () {
-      this.$refs['form-user'].validate(value => {
+      this.$refs['form-user'].validate(async value => {
         if (value) {
-          upUserinfor({
+          const res = await upUserinfor({
             name: this.user.name,
             intro: this.user.intro,
             email: this.user.email
-          }).then(res => {
-            this.$message({
-              message: '修改资料成功',
-              type: 'success',
-              center: true
-            })
-            globalBus.$emit('user-info', this.user)
-            this.getUserinfor()
           })
+          this.$message({
+            message: '修改资料成功',
+            type: 'success',
+            center: true
+          })
+          globalBus.$emit('user-info', this.user)
+          this.getUserinfor()
         } else {
           return false
         }

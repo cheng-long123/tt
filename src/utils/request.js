@@ -44,12 +44,6 @@ request.interceptors.response.use(function (response) {
       message: '登陆状态无效,请重新登录',
       center: true
     })
-  } else if (status === 400) {
-    Message({
-      type: 'warning',
-      message: '参数错误，请检查请求参数',
-      center: true
-    })
   } else if (status === 403) {
     Message({
       type: 'warning',
